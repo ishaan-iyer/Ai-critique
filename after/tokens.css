@@ -111,20 +111,13 @@
   --motion-duration-fast: 160ms;
   --motion-duration-base: 220ms;
   --motion-duration-slow: 360ms;
+  --motion-duration-loop: 2.4s;
+  --motion-duration-reduced: 1.2s;
   --motion-ease-standard: cubic-bezier(0.2, 0, 0.2, 1);
   --motion-ease-emphasized: cubic-bezier(0.2, 0, 0.05, 1);
+  --motion-ease-reduced: ease-in-out;
 
   /* Layout widths */
   --content-width: 72rem;
   --content-width-narrow: 36rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --motion-duration-fast: 0ms;
-    --motion-duration-base: 0ms;
-    --motion-duration-slow: 0ms;
-    --motion-ease-standard: linear;
-    --motion-ease-emphasized: linear;
-  }
 }

@@ -4,8 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FlowState — Habit tracker for developers</title>
+    <link rel="stylesheet" href="tokens.css" />
     <style>
       :root {
+        color-scheme: dark;
         --bg: #0b1020;
         --panel: #111827;
         --panel-alt: #151f32;
@@ -48,9 +50,7 @@
         display: block;
       }
 
-      a:focus-visible,
-      button:focus-visible,
-      input:focus-visible {
+      :focus-visible {
         outline: 3px solid #f8fafc;
         outline-offset: 3px;
         box-shadow: 0 0 0 5px rgba(96, 165, 250, 0.55);
@@ -96,7 +96,6 @@
         font-size: 0.95rem;
       }
 
-      nav a:hover,
       nav a:focus-visible {
         color: var(--text);
       }
@@ -107,6 +106,7 @@
         gap: 12px;
       }
 
+      /* Job: feedback — make control states easy to distinguish. */
       .button {
         display: inline-flex;
         align-items: center;
@@ -115,12 +115,22 @@
         border-radius: 999px;
         padding: 0.9rem 1.5rem;
         font-weight: 700;
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        transition:
+          transform var(--motion-duration-fast) var(--motion-ease-standard),
+          filter var(--motion-duration-fast) var(--motion-ease-standard),
+          box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+          border-color var(--motion-duration-fast) var(--motion-ease-standard),
+          background-color var(--motion-duration-fast) var(--motion-ease-standard),
+          color var(--motion-duration-fast) var(--motion-ease-standard);
       }
 
-      .button:hover,
-      .button:focus-visible {
-        transform: translateY(-1px);
+      .button:disabled,
+      .button[aria-disabled="true"] {
+        opacity: 0.48;
+        box-shadow: none;
+        cursor: not-allowed;
+        transform: none;
+        filter: none;
       }
 
       .button-primary {
@@ -130,9 +140,50 @@
       }
 
       .button-secondary {
-        background: rgba(148, 163, 184, 0.07);
-        border-color: rgba(148, 163, 184, 0.2);
+        background: transparent;
+        border-color: rgba(148, 163, 184, 0.55);
         color: var(--text);
+      }
+
+      @media (hover: hover) {
+        nav a:hover {
+          color: var(--text);
+        }
+
+        .button:not(:disabled):not([aria-disabled="true"]):hover {
+          transform: translateY(-1px);
+          filter: brightness(1.12);
+          box-shadow: 0 16px 32px rgba(124, 58, 237, 0.34);
+        }
+
+        .button-secondary:not(:disabled):not([aria-disabled="true"]):hover {
+          background-color: rgba(148, 163, 184, 0.12);
+          border-color: rgba(148, 163, 184, 0.82);
+          box-shadow: none;
+        }
+
+        .card:hover .arrow {
+          transform: translateX(5px);
+        }
+      }
+
+      .button:not(:disabled):not([aria-disabled="true"]):active {
+        transform: translateY(1px) scale(0.98);
+        filter: brightness(0.94);
+        box-shadow: 0 5px 12px rgba(15, 23, 42, 0.32);
+      }
+
+      .button-secondary:not(:disabled):not([aria-disabled="true"]):active {
+        background-color: rgba(148, 163, 184, 0.2);
+        border-color: rgba(148, 163, 184, 0.9);
+        box-shadow: none;
+      }
+
+      .preview-button {
+        width: 100%;
+        margin-top: 14px;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.8rem;
       }
 
       .hero {
@@ -265,6 +316,31 @@
         font-size: 0.72rem;
       }
 
+      /* Job: attention — pulse the positive progress status. */
+      .status-pulse {
+        display: inline-block;
+        width: 0.42rem;
+        height: 0.42rem;
+        margin-right: 0.35rem;
+        border-radius: 50%;
+        background: var(--success);
+        vertical-align: 0.05em;
+        animation: status-pulse var(--motion-duration-loop) var(--motion-ease-emphasized) infinite;
+      }
+
+      @keyframes status-pulse {
+        50% {
+          opacity: 0.5;
+          transform: scale(1.35);
+        }
+      }
+
+      @keyframes status-fade {
+        50% {
+          opacity: 0.65;
+        }
+      }
+
       .progress {
         padding: 18px;
       }
@@ -388,6 +464,25 @@
         border: 1px solid var(--line);
         border-radius: 22px;
         padding: 24px;
+      }
+
+      /* Job: orientation — point toward details and respond to the card's state. */
+      .card-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin-top: 18px;
+        color: var(--primary-text);
+        font-weight: 700;
+      }
+
+      .arrow {
+        display: inline-block;
+        transition: transform var(--motion-duration-fast) var(--motion-ease-standard);
+      }
+
+      .card:has(a:focus-visible) .arrow {
+        transform: translateX(5px);
       }
 
       .feature-grid .card:first-child {
@@ -626,6 +721,42 @@
           align-items: flex-start;
         }
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .button {
+          transition:
+            filter var(--motion-duration-fast) var(--motion-ease-standard),
+            box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+            border-color var(--motion-duration-fast) var(--motion-ease-standard),
+            background-color var(--motion-duration-fast) var(--motion-ease-standard),
+            color var(--motion-duration-fast) var(--motion-ease-standard);
+        }
+
+        .button:not(:disabled):not([aria-disabled="true"]):hover,
+        .button:not(:disabled):not([aria-disabled="true"]):active {
+          transform: none;
+        }
+
+        .arrow,
+        .card:has(a:focus-visible) .arrow {
+          transition: none;
+          transform: none;
+        }
+
+        .status-pulse {
+          animation: status-fade var(--motion-duration-reduced) var(--motion-ease-reduced) infinite;
+        }
+      }
+
+      @media (hover: hover) and (prefers-reduced-motion: reduce) {
+        .card:hover .arrow {
+          transform: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -684,7 +815,7 @@
               <div class="mini-board">
                 <div class="board-top">
                   <strong>Consistency</strong>
-                  <span class="chip">+18% this month</span>
+                  <span class="chip"><span class="status-pulse" aria-hidden="true"></span>+18% this month</span>
                 </div>
                 <div class="progress">
                   <div class="progress-bar"><span></span></div>
@@ -720,6 +851,9 @@
                       <div class="check"></div>
                     </div>
                   </div>
+                  <button type="button" class="button button-secondary preview-button" disabled>
+                    Add a habit
+                  </button>
                 </div>
               </div>
             </div>
@@ -741,6 +875,9 @@
               <p>
                 Build momentum with streak tracking that encourages consistency over intensity.
               </p>
+              <a class="card-link" href="#progress">
+                Explore smart streaks <span class="arrow" aria-hidden="true">→</span>
+              </a>
             </article>
             <article class="card">
               <div class="icon-wrap">🧠</div>
@@ -748,6 +885,9 @@
               <p>
                 Schedule your deep work windows and keep distractions out of the way.
               </p>
+              <a class="card-link" href="#progress">
+                Explore focus blocks <span class="arrow" aria-hidden="true">→</span>
+              </a>
             </article>
             <article class="card">
               <div class="icon-wrap">📈</div>
@@ -755,6 +895,9 @@
               <p>
                 See what’s working, what’s slipping, and where to adjust your routine.
               </p>
+              <a class="card-link" href="#progress">
+                Explore insights <span class="arrow" aria-hidden="true">→</span>
+              </a>
             </article>
           </div>
         </div>
